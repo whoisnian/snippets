@@ -17,11 +17,11 @@ Root keys:
 
 ## 右键菜单样式
 * 修改为旧版菜单样式
-  ```pwsh
+  ```powershell
   reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
   ```
 * 恢复到新版默认样式
-  ```pwsh
+  ```powershell
   reg delete "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" /f
   ```
 
@@ -29,11 +29,11 @@ Root keys:
 
 ## 硬件时钟
 * 要求硬件时钟使用 UTC 时间
-  ```pwsh
+  ```powershell
   reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation" /v RealTimeIsUniversal /d 1 /t REG_DWORD /f
   ```
 * 恢复硬件时钟默认的本地时间
-  ```pwsh
+  ```powershell
   reg delete "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation" /v RealTimeIsUniversal /f
   ```
 
@@ -42,21 +42,21 @@ Root keys:
 ## 文件资源管理器
 文件资源管理器曾因一个 300 页的 PDF 文件无响应，排查后发现是 Windows Search 建立索引导致，禁用 Windows Search 后无法使用图库功能，因此隐藏侧栏图库图标
 * 隐藏侧栏图库
-  ```pwsh
+  ```powershell
   reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f
   ```
 * 恢复侧栏图库
-  ```pwsh
+  ```powershell
   reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f
   ```
 
 文件资源管理器主文件夹加载有延迟，修改为默认打开“此电脑”后，隐藏侧栏主文件夹图标
 * 隐藏侧栏主文件夹
-  ```pwsh
+  ```powershell
   reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f
   ```
 * 恢复侧栏主文件夹
-  ```pwsh
+  ```powershell
   reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" /f
   ```
 
