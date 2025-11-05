@@ -82,7 +82,7 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
         additionalLanguages: [ // default: markup jsx tsx swift kotlin objectivec js-extras reason rust graphql yaml go cpp markdown python json
-          'bash', 'ini', 'java', 'javascript', 'log', 'markdown', 'nginx', 'powershell', 'php', 'ruby', 'sql',
+          'bash', 'ini', 'java', 'javascript', 'log', 'markdown', 'nginx', 'powershell', 'php', 'ruby', 'sql', 'systemd',
         ], // supported additional: https://prismjs.com/#supported-languages or `ls node_modules/prismjs/components/`
       },
     }),
