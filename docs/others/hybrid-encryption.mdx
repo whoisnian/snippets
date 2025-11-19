@@ -1,3 +1,6 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # 混合加密
 常见的加密算法有对称加密如 AES，非对称加密如 RSA 和 ECC。非对称加密无需预先共享密钥，但加解密速度较慢，且加密后数据量通常会增大，因此实践中常使用混合加密传输数据：
 1. 接收方使用非对称加密算法生成一对公私钥，其中公钥可以公开，私钥必须保密
@@ -21,7 +24,10 @@ openssl genrsa -out rsa_private.pem 2048 # 生成 RSA 私钥
 openssl rsa -in rsa_private.pem -pubout -out rsa_public.pem # 从私钥中提取 RSA 公钥
 ```
 
-## Ruby 加解密示例
+## 加解密示例
+<Tabs>
+<TabItem value="ruby" label="Ruby" default>
+将以下代码保存为 `hybrid_encryption.rb`，执行 `ruby hybrid_encryption.rb` 运行该脚本
 ```ruby showLineNumbers
 require 'openssl'
 require 'base64'
@@ -105,18 +111,17 @@ decrypted_data = aes_decipher.update(encrypted_data) + aes_decipher.final
 
 puts "Decrypted Data: #{decrypted_data}"
 ```
-
-执行 `ruby hybrid_encryption.rb` 运行该脚本，输出结果类似于：
+输出结果示例：
 ```
 Original  Data: The quick brown fox jumps over the lazy dog
 Encrypted Data: {"encrypted_data":"dfh0hI37NtmMSYhr2o0QEkaDOfLVk6qIBDZpdBOvqF2b3Lw9TE3xEsLqvLcvsugO","encrypted_key":"gUwBwput0Q1LMmoUosDDC5l4T8a2VQaEOPOY9ZiHPQi8UEPX7cKihLpl4U2FYdTOGUI5+Qs0DKa9CQYBEn5TwLe38nuqlmd4cxCF0UKOa0MoS4X6XQtRouYw0ngSBaZMQotP6WJGOtBrTsHyLTGGSX67Z0JZRyKzw70SaMfPELpk3Pe/D/Dx12nMFogYExvt1myjB51WeMpDfDYLnDj7y4ZOk0NDv28DIjLlz4yZeSHd4iyEZO78nXH630U2BatwIM2vWU+cxCTjeEfLAh4lcxkq6ZJi8QuBS779pYR7nHtDUorZNCUnfqrC1Ke419RDmxbIJbADrViJR3JZZKo/kA==","iv":"egLjHHOtXR9QheL74vunOQ=="}
 Decrypted Data: The quick brown fox jumps over the lazy dog
 ```
-
-## Node.js 加解密示例
+</TabItem>
+<TabItem value="nodejs" label="Node.js">
+将以下代码保存为 `hybrid_encryption.mjs`，执行 `node hybrid_encryption.mjs` 运行该脚本
 ```js showLineNumbers
-const crypto = require('crypto')
-const process = require('process')
+import crypto from 'crypto'
 
 const RSA_PRIVATE_KEY_PEM = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCcvaxoGO5vhlzA
@@ -159,48 +164,50 @@ aQIDAQAB
 
 const INPUT = "The quick brown fox jumps over the lazy dog"
 
-;(async () => {
-  const RSA_PUBLIC_KEY = crypto.createPublicKey(RSA_PUBLIC_KEY_PEM)
-  const RSA_PRIVATE_KEY = crypto.createPrivateKey(RSA_PRIVATE_KEY_PEM)
+const RSA_PUBLIC_KEY = crypto.createPublicKey(RSA_PUBLIC_KEY_PEM)
+const RSA_PRIVATE_KEY = crypto.createPrivateKey(RSA_PRIVATE_KEY_PEM)
 
-  // public encryption
-  const aes_key = crypto.randomBytes(32)
-  const aes_iv = crypto.randomBytes(16)
-  const aes_cipher = crypto.createCipheriv('aes-256-cbc', aes_key, aes_iv)
-  const encrypted_data = Buffer.concat([aes_cipher.update(INPUT), aes_cipher.final()])
-  const encrypted_key = crypto.publicEncrypt({key: RSA_PUBLIC_KEY, padding: crypto.constants.PKCS1_OAEP_PADDING}, aes_key)
-  const encrypted_result = JSON.stringify({
-    encrypted_data: encrypted_data.toString('base64'),
-    encrypted_key: encrypted_key.toString('base64'),
-    iv: aes_iv.toString('base64')
-  })
+// public encryption
+const aes_key = crypto.randomBytes(32)
+const aes_iv = crypto.randomBytes(16)
+const aes_cipher = crypto.createCipheriv('aes-256-cbc', aes_key, aes_iv)
+const encrypted_data = Buffer.concat([aes_cipher.update(INPUT), aes_cipher.final()])
+const encrypted_key = crypto.publicEncrypt({key: RSA_PUBLIC_KEY, padding: crypto.constants.PKCS1_OAEP_PADDING}, aes_key)
+const encrypted_result = JSON.stringify({
+  encrypted_data: encrypted_data.toString('base64'),
+  encrypted_key: encrypted_key.toString('base64'),
+  iv: aes_iv.toString('base64')
+})
 
-  console.log(`Original  Data: ${INPUT}`)
-  console.log(`Encrypted Data: ${encrypted_result}`)
+console.log(`Original  Data: ${INPUT}`)
+console.log(`Encrypted Data: ${encrypted_result}`)
 
-  // private decryption
-  const params = JSON.parse(encrypted_result)
-  const encrypted_data_d = Buffer.from(params["encrypted_data"], 'base64')
-  const encrypted_key_d = Buffer.from(params["encrypted_key"], 'base64')
-  const aes_iv_d = Buffer.from(params["iv"], 'base64')
+// private decryption
+const params = JSON.parse(encrypted_result)
+const encrypted_data_d = Buffer.from(params["encrypted_data"], 'base64')
+const encrypted_key_d = Buffer.from(params["encrypted_key"], 'base64')
+const aes_iv_d = Buffer.from(params["iv"], 'base64')
 
-  const decrypted_key = crypto.privateDecrypt({key: RSA_PRIVATE_KEY, padding: crypto.constants.PKCS1_OAEP_PADDING}, encrypted_key_d)
-  const aes_decipher = crypto.createDecipheriv('aes-256-cbc', decrypted_key, aes_iv_d)
-  const decryptedData = Buffer.concat([aes_decipher.update(encrypted_data_d), aes_decipher.final()])
+const decrypted_key = crypto.privateDecrypt({key: RSA_PRIVATE_KEY, padding: crypto.constants.PKCS1_OAEP_PADDING}, encrypted_key_d)
+const aes_decipher = crypto.createDecipheriv('aes-256-cbc', decrypted_key, aes_iv_d)
+const decryptedData = Buffer.concat([aes_decipher.update(encrypted_data_d), aes_decipher.final()])
 
-  console.log(`Decrypted Data: ${decryptedData.toString()}`)
-})()
+console.log(`Decrypted Data: ${decryptedData.toString()}`)
 ```
-
-执行 `node hybrid_encryption.js` 运行该脚本，输出结果类似于：
+输出结果示例：
 ```
 Original  Data: The quick brown fox jumps over the lazy dog
 Encrypted Data: {"encrypted_data":"jbRZOlFxQC4YYf7PkL0PpNe5+d28ixL5slRnapKSYyZFABKOC0rj/TilSQ2slV/i","encrypted_key":"cyY57TIGQiDUcynpMHir4fUzdVAUUMW30ufH6WkSFUrwFmfA/L5NqILs1zqMGRYe9c3Z5mR3Sl4joxUea4ZV6O7/2IjafZaOLAJFhYoNR/yafVZ8Az9/x/t5fK6xcXQfHxSyYEDPIiI/EP2czc+ssyVme2a+eZeEyzpV+swvBAo1mZqALd0vnWwiBf6l9+uOrWyEPCWSthcW2XkCjfUtobxLZxkHB6OpaQHY0S2rkK3AWkq3nMXTMUI9cRsudqulxA8XTnBh+ZxiERpbjDqvV26IqtoWFLllX1uAFbrlwHycsGKqKUcXKIXjOmvNxpAv6dH417ub6EI2GMgPHUnizQ==","iv":"Kx3NRLRb06ZyB4rJLz9aKA=="}
 Decrypted Data: The quick brown fox jumps over the lazy dog
 ```
-
-## Browser JavaScript 加解密示例
-```js showLineNumbers
+</TabItem>
+<TabItem value="browser" label="Browser">
+将以下代码保存为 `hybrid_encryption.html`，使用 Chrome 140+ 或 Firefox 133+ 打开该文件在控制台查看运行结果
+```html showLineNumbers
+<!DOCTYPE html>
+<html>
+<body>
+<script type="module">
 const RSA_PRIVATE_KEY_PEM = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCcvaxoGO5vhlzA
 l0cWnRNTP8W1rg8zmVrJA3Yv6OSt+tPf0kcXVpGpBrIHofXxiPAY2FnhKLzaHYrA
@@ -242,66 +249,67 @@ aQIDAQAB
 
 const INPUT = "The quick brown fox jumps over the lazy dog"
 
-;(async () => {
-  // parse public key
-  const public_pem_header = '-----BEGIN PUBLIC KEY-----'
-  const public_pem_footer = '-----END PUBLIC KEY-----'
-  const public_pem_contents = RSA_PUBLIC_KEY_PEM.substring(
-    public_pem_header.length,
-    RSA_PUBLIC_KEY_PEM.length - public_pem_footer.length - 1,
-  )
-  const rsa_public_bytes = Uint8Array.fromBase64(public_pem_contents) // chrome 140+ || firefox 133+
-  const RSA_PUBLIC_KEY = await window.crypto.subtle.importKey('spki', rsa_public_bytes, { name: 'RSA-OAEP', hash: 'SHA-1' }, true, ['encrypt'])
+// parse public key
+const public_pem_header = '-----BEGIN PUBLIC KEY-----'
+const public_pem_footer = '-----END PUBLIC KEY-----'
+const public_pem_contents = RSA_PUBLIC_KEY_PEM.substring(
+  public_pem_header.length,
+  RSA_PUBLIC_KEY_PEM.length - public_pem_footer.length - 1,
+)
+const rsa_public_bytes = Uint8Array.fromBase64(public_pem_contents) // chrome 140+ || firefox 133+
+const RSA_PUBLIC_KEY = await window.crypto.subtle.importKey('spki', rsa_public_bytes, { name: 'RSA-OAEP', hash: 'SHA-1' }, true, ['encrypt'])
 
-  // parse private key
-  const private_pem_header = '-----BEGIN PRIVATE KEY-----'
-  const private_pem_footer = '-----END PRIVATE KEY-----'
-  const private_pem_contents = RSA_PRIVATE_KEY_PEM.substring(
-    private_pem_header.length,
-    RSA_PRIVATE_KEY_PEM.length - private_pem_footer.length - 1,
-  )
-  const rsa_private_bytes = Uint8Array.fromBase64(private_pem_contents) // chrome 140+ || firefox 133+
-  const RSA_PRIVATE_KEY = await window.crypto.subtle.importKey('pkcs8', rsa_private_bytes, { name: 'RSA-OAEP', hash: 'SHA-1' }, true, ['decrypt'])
+// parse private key
+const private_pem_header = '-----BEGIN PRIVATE KEY-----'
+const private_pem_footer = '-----END PRIVATE KEY-----'
+const private_pem_contents = RSA_PRIVATE_KEY_PEM.substring(
+  private_pem_header.length,
+  RSA_PRIVATE_KEY_PEM.length - private_pem_footer.length - 1,
+)
+const rsa_private_bytes = Uint8Array.fromBase64(private_pem_contents) // chrome 140+ || firefox 133+
+const RSA_PRIVATE_KEY = await window.crypto.subtle.importKey('pkcs8', rsa_private_bytes, { name: 'RSA-OAEP', hash: 'SHA-1' }, true, ['decrypt'])
 
-  // public encryption
-  const input = new TextEncoder().encode(INPUT)
-  const aes_key = await window.crypto.subtle.generateKey({ name: "AES-CBC", length: 256 }, true, ["encrypt", "decrypt"])
-  const aes_iv = window.crypto.getRandomValues(new Uint8Array(16))
-  const encrypted_data = await window.crypto.subtle.encrypt({ name: "AES-CBC", iv: aes_iv }, aes_key, input)
-  const exported_key = await window.crypto.subtle.exportKey("raw", aes_key)
-  const encrypted_key = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, RSA_PUBLIC_KEY, exported_key)
-  const encrypted_result = JSON.stringify({
-    encrypted_data: (new Uint8Array(encrypted_data)).toBase64(),
-    encrypted_key: (new Uint8Array(encrypted_key)).toBase64(),
-    iv: (new Uint8Array(aes_iv)).toBase64()
-  })
+// public encryption
+const input = new TextEncoder().encode(INPUT)
+const aes_key = await window.crypto.subtle.generateKey({ name: "AES-CBC", length: 256 }, true, ["encrypt", "decrypt"])
+const aes_iv = window.crypto.getRandomValues(new Uint8Array(16))
+const encrypted_data = await window.crypto.subtle.encrypt({ name: "AES-CBC", iv: aes_iv }, aes_key, input)
+const exported_key = await window.crypto.subtle.exportKey("raw", aes_key)
+const encrypted_key = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, RSA_PUBLIC_KEY, exported_key)
+const encrypted_result = JSON.stringify({
+  encrypted_data: (new Uint8Array(encrypted_data)).toBase64(),
+  encrypted_key: (new Uint8Array(encrypted_key)).toBase64(),
+  iv: (new Uint8Array(aes_iv)).toBase64()
+})
 
-  console.log(`Original  Data: ${INPUT}`)
-  console.log(`Encrypted Data: ${encrypted_result}`)
+console.log(`Original  Data: ${INPUT}`)
+console.log(`Encrypted Data: ${encrypted_result}`)
 
-  // private decryption
-  const params = JSON.parse(encrypted_result)
-  const encrypted_data_d = Uint8Array.fromBase64(params["encrypted_data"])
-  const encrypted_key_d = Uint8Array.fromBase64(params["encrypted_key"])
-  const aes_iv_d = Uint8Array.fromBase64(params["iv"])
+// private decryption
+const params = JSON.parse(encrypted_result)
+const encrypted_data_d = Uint8Array.fromBase64(params["encrypted_data"])
+const encrypted_key_d = Uint8Array.fromBase64(params["encrypted_key"])
+const aes_iv_d = Uint8Array.fromBase64(params["iv"])
 
-  const aes_key_bytes = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, RSA_PRIVATE_KEY, encrypted_key_d)
-  const aes_key_d = await window.crypto.subtle.importKey("raw", aes_key_bytes, "AES-CBC", true, ["encrypt", "decrypt"])
-  const decrypted_data = await window.crypto.subtle.decrypt({ name: "AES-CBC", iv: aes_iv_d }, aes_key_d, encrypted_data_d)
-  const decryptedText = new TextDecoder().decode(decrypted_data)
+const aes_key_bytes = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, RSA_PRIVATE_KEY, encrypted_key_d)
+const aes_key_d = await window.crypto.subtle.importKey("raw", aes_key_bytes, "AES-CBC", true, ["encrypt", "decrypt"])
+const decrypted_data = await window.crypto.subtle.decrypt({ name: "AES-CBC", iv: aes_iv_d }, aes_key_d, encrypted_data_d)
+const decryptedText = new TextDecoder().decode(decrypted_data)
 
-  console.log(`Decrypted Data: ${decryptedText}`)
-})()
+console.log(`Decrypted Data: ${decryptedText}`)
+</script>
+</body>
+</html>
 ```
-
-手动粘贴以上代码到浏览器控制台运行，输出结果类似于：
+输出结果示例：
 ```
 Original  Data: The quick brown fox jumps over the lazy dog
 Encrypted Data: {"encrypted_data":"r14FOcrF7+ayqQPEi8j82y56sBEQXVJvQMOh9Nqjj9iyF5TtwzRnqj1TMR/B3WBX","encrypted_key":"iw7rnb016WUZkbYb74r9nDe3c+hMKoVmMyX57NeOkA/C2dkmphxJL7QTCqQtj7h/ZTRqosqlN8BpnWQDBr/A5x8OEx5wEaxafPMLsoJAZqfr7ma73ixxrfGDmN/JVzclS0Da7hA2swcxuowPkRdQkC1NF6EN0e4etX1xtDOK1HgkRiFejaguezfTkagT9tEuem54SEJy2K32bFk3811HB56MaZDuqCUX8kLxJa5Td5HzFXXv058IYIjkbKoNmECtpUlzKU5OfZzg9Y8McbnJ/B/BlE1J9eZfskitSRl+MFDPTE748B13sdivJ/XeHMxeVceCcDqI48wg4rpu4FimwQ==","iv":"Kv4QDqp+oFaeF5t75Ezb/A=="}
 Decrypted Data: The quick brown fox jumps over the lazy dog
 ```
-
-## Go 加解密示例
+</TabItem>
+<TabItem value="go" label="Go">
+将以下代码保存为 `hybrid_encryption.go`，执行 `go run hybrid_encryption.go` 运行该程序
 ```go showLineNumbers
 package main
 
@@ -441,10 +449,11 @@ func pkcs7Unpad(data []byte) []byte {
 	return data[:(length - unpadding)]
 }
 ```
-
-执行 `go run hybrid_encryption.go` 运行该脚本，输出结果类似于：
+输出结果示例：
 ```
 Original  Data: The quick brown fox jumps over the lazy dog
 Encrypted Data: {"encrypted_data":"DdwVVz0I15fQA+4iMxz5uC4V8wo/lVUhiUbhJvtXaJBxTopHPfeI9DCAUeIG3BZV","encrypted_key":"UgF2HuncxuNYSp1LL3hCZUz1M1Fy52sXCQ1neKZIhKUkuC4ks3rWA3XetKJ4181vf+Yw/1MwQrzvwApD/UocW7zTXRHrgPaPAC1D7vBwuKEAb0KQ0QFoWGkxMqc8uY9e2xECkykcIX7QbmwPLKGiLis7uCyDt1JsXUJvqRyWaj6IAMpKS60lQjVxhlZpOwDwEKEMKlJSYt91TtzjIFhFmNg9DUK38gh/L6OIspuQsAbPPCXVoDO8wQ/S66Nw4CK+fpohpS1Sc6nf4eozWCIeZM5108DoWV4rcYVws73rsukCUoIY+5RxiaD2mUHBQ0cPrDW2INhNHQa8Gyc9Pv3j7g==","iv":"X6ITCmdmLKzWTkcSlLr+gQ=="}
 Decrypted Data: The quick brown fox jumps over the lazy dog
 ```
+</TabItem>
+</Tabs>
