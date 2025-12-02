@@ -1,0 +1,613 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# HTTP 请求
+后端 Ruby 代码中用到的 HTTP 客户端库主要有：
+* [Net::HTTP](https://docs.ruby-lang.org/en/master/Net/HTTP.html): Ruby 标准库自带的 HTTP 客户端，无需安装额外依赖
+* [HTTParty](https://github.com/jnunemaker/httparty): 对 Net::HTTP 的封装，调用更简洁，开源项目 [GitLab](https://gitlab.com/gitlab-org/gitlab/-/blob/854658c9a431454ae38007c3ab5ed09505020bbb/Gemfile#L307) 有在使用
+* [http.rb](https://github.com/httprb/http): 支持链式调用和流式处理，不基于 Net::HTTP 而是依赖原生的 [llhttp](https://github.com/nodejs/llhttp) 解析器
+
+参考 [OpenTelemetry instrumentation libraries](https://github.com/open-telemetry/opentelemetry-ruby-contrib/blob/main/instrumentation)，常用的 Ruby HTTP 客户端库还有 Faraday、Typhoeus、Excon、RestClient 等，主要特点如下：
+* [Faraday](https://github.com/lostisland/faraday): 支持多种适配器，默认使用 Net::HTTP，可以按需切换后端实现
+* [Excon](https://github.com/excon/excon): 仅支持 HTTP/1.1 协议，对于 multipart 请求可能需要[手动构造](https://github.com/excon/excon/issues/353#issuecomment-2402815500)请求体
+* [HTTPX](https://gitlab.com/os85/httpx): 支持 HTTP/2 和 HTTP/1.X 协议，链式调用，默认启用并发请求特性
+* [Typhoeus](https://github.com/typhoeus/typhoeus): 最后版本 1.5.0 发布于2025年8月，前一版本 1.4.1 发布于2023年11月，不再活跃维护
+* [Patron](https://github.com/toland/patron): 最后版本 0.13.4 发布于2025年2月，前一版本 0.13.3 发布于2019年5月，不再活跃维护
+* [HTTPClient](https://github.com/nahi/httpclient): 最后版本 2.9.0 发布于2025年2月，前一版本 2.8.3 发布于2016年12月，不再活跃维护
+* [RestClient](https://github.com/rest-client/rest-client): 最后版本 2.1.0 发布于2019年8月，已停止维护
+
+参考来源：
+* [Blog: The state of HTTP clients, or why you should use httpx](https://honeyryderchuck.gitlab.io/2023/10/15/state-of-ruby-http-clients-use-httpx.html)
+* [The Ruby Toolbox: HTTP clients](https://www.ruby-toolbox.com/categories/http_clients?display=table&order=score)
+* [API test service: httpbin.org](https://github.com/postmanlabs/httpbin)
+* [API test service: Postman Echo](https://postman-echo.com)
+
+## 常规 GET 请求
+<Tabs groupId="http-client">
+<TabItem value="curl" label="curl">
+```sh showLineNumbers
+curl https://postman-echo.com/get
+```
+示例响应：
+```json showLineNumbers
+{
+  "args": {},
+  "headers": {
+    "host": "postman-echo.com",
+    "accept": "*/*",
+    "accept-encoding": "gzip, br",
+    "x-forwarded-proto": "https",
+    "user-agent": "curl/8.17.0"
+  },
+  "url": "https://postman-echo.com/get"
+}
+```
+</TabItem>
+<TabItem value="net-http" label="Net::HTTP">
+```ruby showLineNumbers
+require 'net/http'
+res = Net::HTTP.get_response(URI('https://postman-echo.com/get'))
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "user-agent"=>"Ruby",
+   "x-forwarded-proto"=>"https",
+   "accept"=>"*/*"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+<TabItem value="httparty" label="HTTParty">
+```ruby showLineNumbers
+require 'httparty'
+res = HTTParty.get('https://postman-echo.com/get')
+res # or JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "user-agent"=>"Ruby",
+   "x-forwarded-proto"=>"https",
+   "accept"=>"*/*"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+<TabItem value="http" label="http.rb">
+```ruby showLineNumbers
+require 'http'
+res = HTTP.get('https://postman-echo.com/get')
+JSON.parse(res.body.to_s)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"http.rb/5.3.1"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+<TabItem value="faraday" label="Faraday">
+```ruby showLineNumbers
+require 'faraday'
+res = Faraday.get('https://postman-echo.com/get')
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"Faraday v2.14.0"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+<TabItem value="excon" label="Excon">
+```ruby showLineNumbers
+require 'excon'
+res = Excon.get('https://postman-echo.com/get')
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"excon/1.3.1"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+<TabItem value="httpx" label="HTTPX">
+```ruby showLineNumbers
+require 'httpx'
+res = HTTPX.get('https://postman-echo.com/get')
+res.json
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"httpx.rb/1.6.3"},
+ "url"=>"https://postman-echo.com/get"}
+```
+</TabItem>
+</Tabs>
+
+## 以 POST 方式发送 JSON 数据
+<Tabs groupId="http-client">
+<TabItem value="curl" label="curl">
+```sh showLineNumbers
+curl -X POST \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7' \
+  --data-raw '{"key1":"value1","key2":"测试 中文"}' \
+  https://postman-echo.com/post
+```
+示例响应：
+```json showLineNumbers
+{
+  "args": {},
+  "data": {
+    "key1": "value1",
+    "key2": "测试 中文"
+  },
+  "files": {},
+  "form": {},
+  "headers": {
+    "host": "postman-echo.com",
+    "content-length": "40",
+    "accept-encoding": "gzip, br",
+    "x-forwarded-proto": "https",
+    "content-type": "application/json",
+    "accept": "*/*",
+    "user-agent": "curl/8.17.0",
+    "authorization": "Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7"
+  },
+  "json": {
+    "key1": "value1",
+    "key2": "测试 中文"
+  },
+  "url": "https://postman-echo.com/post"
+}
+```
+</TabItem>
+<TabItem value="net-http" label="Net::HTTP">
+```ruby showLineNumbers
+require 'net/http'
+res = Net::HTTP.post(
+  URI('https://postman-echo.com/post'),
+  {'key1' => 'value1', 'key2' => '测试 中文'}.to_json,
+  {
+    'Content-Type' => 'application/json',
+    'Authorization' => 'Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7'
+  }
+)
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-length"=>"40",
+   "accept-encoding"=>"gzip, br",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"application/json",
+   "accept"=>"*/*",
+   "user-agent"=>"Ruby"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="httparty" label="HTTParty">
+```ruby showLineNumbers
+require 'httparty'
+res = HTTParty.post('https://postman-echo.com/post',
+  headers: {
+    'Content-Type' => 'application/json',
+    'Authorization' => 'Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7'
+  },
+  body: {'key1' => 'value1', 'key2' => '测试 中文'}.to_json
+)
+res # or JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-length"=>"40",
+   "accept-encoding"=>"gzip, br",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"application/json",
+   "accept"=>"*/*",
+   "user-agent"=>"Ruby"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="http" label="http.rb">
+```ruby showLineNumbers
+require 'http'
+res = HTTP.headers('Authorization' => 'Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7')
+  .post('https://postman-echo.com/post', :json => {:key1=>'value1', :key2=>'测试 中文'})
+JSON.parse(res.body.to_s)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-length"=>"40",
+   "accept-encoding"=>"gzip, br",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"application/json; charset=utf-8",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7",
+   "user-agent"=>"http.rb/5.3.1"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="faraday" label="Faraday">
+```ruby showLineNumbers
+require 'faraday'
+conn = Faraday.new(url: 'https://postman-echo.com') do |builder|
+  builder.request :authorization, 'Bearer', 'CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7'
+  builder.request :json
+  builder.response :json
+  builder.adapter Faraday.default_adapter
+end
+res = conn.post('/post') do |req|
+  req.body = {'key1' => 'value1', 'key2' => '测试 中文'}.to_json
+end
+res.body
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-length"=>"40",
+   "accept-encoding"=>"gzip, br",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"Faraday v2.14.0",
+   "content-type"=>"application/json",
+   "accept"=>"*/*"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="excon" label="Excon">
+```ruby showLineNumbers
+require 'excon'
+res = Excon.post('https://postman-echo.com/post',
+  headers: {
+    'Content-Type' => 'application/json',
+    'Authorization' => 'Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7'
+  },
+  body: {'key1' => 'value1', 'key2' => '测试 中文'}.to_json
+)
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-type"=>"application/json",
+   "accept-encoding"=>"gzip, br",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7",
+   "x-forwarded-proto"=>"https",
+   "content-length"=>"40"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="httpx" label="HTTPX">
+```ruby showLineNumbers
+require 'httpx'
+res = HTTPX.with(headers: {
+  'Content-Type' => 'application/json',
+  'Authorization' => 'Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7'
+}).post('https://postman-echo.com/post', body: {'key1' => 'value1', 'key2' => '测试 中文'}.to_json)
+res.json
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "files"=>{},
+ "form"=>{},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-length"=>"40",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"httpx.rb/1.6.3",
+   "content-type"=>"application/json",
+   "authorization"=>"Bearer CakjU0VzcuBr6A3LyveTOTaPzBM1XZw7"},
+ "json"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+</Tabs>
+
+## 以 Multipart 方式上传文件
+<Tabs groupId="http-client">
+<TabItem value="curl" label="curl">
+```sh showLineNumbers
+echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=' | base64 -d > /tmp/1x1.png
+curl -X POST \
+  -F key1=value1 \
+  -F key2='测试 中文' \
+  -F file=@/tmp/1x1.png \
+  https://postman-echo.com/post
+```
+示例响应：
+```json showLineNumbers
+{
+  "args": {},
+  "data": {},
+  "files": {
+    "1x1.png": "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="
+  },
+  "form": {
+    "key1": "value1",
+    "key2": "测试 中文"
+  },
+  "headers": {
+    "host": "postman-echo.com",
+    "content-length": "508",
+    "accept-encoding": "gzip, br",
+    "x-forwarded-proto": "https",
+    "accept": "*/*",
+    "user-agent": "curl/8.17.0",
+    "content-type": "multipart/form-data; boundary=------------------------krMvKoMR5awocDTeHeJ4Qv"
+  },
+  "json": null,
+  "url": "https://postman-echo.com/post"
+}
+```
+</TabItem>
+<TabItem value="net-http" label="Net::HTTP">
+```ruby showLineNumbers
+require 'net/http'
+uri = URI('https://postman-echo.com/post')
+req = Net::HTTP::Post.new(uri)
+req.set_form({
+  'key1' => 'value1',
+  'key2' => '测试 中文',
+  'file' => File.open('/tmp/1x1.png')
+}, 'multipart/form-data')
+res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+  http.request(req)
+end
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-type"=>"multipart/form-data; boundary=CYVBuSt6W9t2W5y-i8DC31WJ_xKDUaAW8mTrkz9yAiBtakD2CY2PSQ",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"Ruby",
+   "content-length"=>"555"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="httparty" label="HTTParty">
+```ruby showLineNumbers
+require 'httparty'
+res = HTTParty.post('https://postman-echo.com/post',
+  multipart: true,
+  body: {
+    key1: 'value1',
+    key2: '测试 中文',
+    file: File.open('/tmp/1x1.png')
+  }
+)
+res # or JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-type"=>"multipart/form-data; boundary=------------------------2a28qCJjyqD_Mvnc",
+   "accept-encoding"=>"gzip, br",
+   "accept"=>"*/*",
+   "x-forwarded-proto"=>"https",
+   "user-agent"=>"Ruby",
+   "content-length"=>"484"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="http" label="http.rb">
+```ruby showLineNumbers
+require 'http'
+res = HTTP.post('https://postman-echo.com/post', :form => {
+  key1: 'value1',
+  key2: '测试 中文',
+  file: HTTP::FormData::File.new('/tmp/1x1.png')
+})
+JSON.parse(res.body.to_s)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"multipart/form-data; boundary=---------------------c9642de5ba281ce4b329ae1459b01066ea572f363a",
+   "user-agent"=>"http.rb/5.3.1",
+   "content-length"=>"591"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="faraday" label="Faraday">
+```ruby showLineNumbers
+require 'faraday'
+require 'faraday/multipart' # https://github.com/lostisland/faraday-multipart
+conn = Faraday.new(url: 'https://postman-echo.com') do |builder|
+  builder.request :multipart
+  builder.response :json
+  builder.adapter Faraday.default_adapter
+end
+res = conn.post('/post') do |req|
+  req.body = {
+    key1: 'value1',
+    key2: '测试 中文',
+    file: Faraday::Multipart::FilePart.new('/tmp/1x1.png', 'image/png')
+  }
+end
+res.body
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept"=>"*/*",
+   "accept-encoding"=>"gzip, br",
+   "user-agent"=>"Faraday v2.14.0",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"multipart/form-data; boundary=-----------RubyMultipartPost-e9e554093d9c8c0ffc78d9f676b0479d",
+   "content-length"=>"623"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="excon" label="Excon">
+```ruby showLineNumbers
+require 'excon' # https://github.com/excon/excon/issues/353
+require 'net/http/post/multipart' # https://github.com/socketry/multipart-post
+url = 'https://postman-echo.com/post'
+params = {
+  'key1' => 'value1',
+  'key2' => '测试 中文',
+  'file' => UploadIO.new(File.open('/tmp/1x1.png'), 'image/png')
+}
+builder = Net::HTTP::Post::Multipart.new(URI(url).path, params)
+res = Excon.post(url,
+  headers: {
+    'Content-Type' => builder['Content-Type'],
+    'Content-Length' => builder.content_length.to_s
+  },
+  body: builder.body_stream.read
+)
+JSON.parse(res.body)
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "accept-encoding"=>"gzip, br",
+   "content-length"=>"531",
+   "x-forwarded-proto"=>"https",
+   "content-type"=>"multipart/form-data; boundary=--196827c6-84cf-4dd6-88e0-de71dd36b27f"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+<TabItem value="httpx" label="HTTPX">
+```ruby showLineNumbers
+require 'httpx'
+res = HTTPX.post('https://postman-echo.com/post', :form => {
+  key1: 'value1',
+  key2: '测试 中文',
+  file: File.new('/tmp/1x1.png')
+})
+res.json
+```
+示例响应：
+```ruby showLineNumbers
+{"args"=>{},
+ "data"=>{},
+ "files"=>
+  {"1x1.png"=>
+    "data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII="},
+ "form"=>{"key1"=>"value1", "key2"=>"测试 中文"},
+ "headers"=>
+  {"host"=>"postman-echo.com",
+   "content-type"=>"multipart/form-data; boundary=---------------------aafe91c0efe5ee1d85ccf3af860257d956c6c3c65f",
+   "accept-encoding"=>"gzip, br",
+   "user-agent"=>"httpx.rb/1.6.3",
+   "x-forwarded-proto"=>"https",
+   "accept"=>"*/*",
+   "content-length"=>"628"},
+ "json"=>nil,
+ "url"=>"https://postman-echo.com/post"}
+```
+</TabItem>
+</Tabs>
