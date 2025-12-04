@@ -1,0 +1,350 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# 操作系统标识
+
+参考来源：
+* [Linux manual page: os-release(5)](https://man7.org/linux/man-pages/man5/os-release.5.html)
+* [GitHub: whoisnian/virt-launcher](https://github.com/whoisnian/virt-launcher)
+
+## Arch Linux
+```sh showLineNumbers
+NAME="Arch Linux"
+PRETTY_NAME="Arch Linux"
+ID=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://gitlab.archlinux.org/groups/archlinux/-/issues"
+PRIVACY_POLICY_URL="https://terms.archlinux.org/docs/privacy-policy/"
+LOGO=archlinux-logo
+```
+
+## Alpine Linux
+<Tabs>
+<TabItem value="alpinelinux3.21" label="3.21.5">
+```sh showLineNumbers
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.21.5
+PRETTY_NAME="Alpine Linux v3.21"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
+```
+</TabItem>
+<TabItem value="alpinelinux3.22" label="3.22.2">
+```sh showLineNumbers
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.22.2
+PRETTY_NAME="Alpine Linux v3.22"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
+```
+</TabItem>
+</Tabs>
+
+## CentOS
+<Tabs>
+<TabItem value="centos7.0" label="7.9.2009">
+```sh showLineNumbers
+NAME="CentOS Linux"
+VERSION="7 (Core)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="7"
+PRETTY_NAME="CentOS Linux 7 (Core)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:7"
+HOME_URL="https://www.centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+
+CENTOS_MANTISBT_PROJECT="CentOS-7"
+CENTOS_MANTISBT_PROJECT_VERSION="7"
+REDHAT_SUPPORT_PRODUCT="centos"
+REDHAT_SUPPORT_PRODUCT_VERSION="7"
+```
+</TabItem>
+<TabItem value="centos-stream9" label="Stream 9">
+```sh showLineNumbers
+NAME="CentOS Stream"
+VERSION="9"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="9"
+PLATFORM_ID="platform:el9"
+PRETTY_NAME="CentOS Stream 9"
+ANSI_COLOR="0;31"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:centos:centos:9"
+HOME_URL="https://centos.org/"
+BUG_REPORT_URL="https://issues.redhat.com/"
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux 9"
+REDHAT_SUPPORT_PRODUCT_VERSION="CentOS Stream"
+```
+</TabItem>
+<TabItem value="centos-stream10" label="Stream 10">
+```sh showLineNumbers
+NAME="CentOS Stream"
+VERSION="10 (Coughlan)"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="10"
+PLATFORM_ID="platform:el10"
+PRETTY_NAME="CentOS Stream 10 (Coughlan)"
+ANSI_COLOR="0;31"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:centos:centos:10"
+HOME_URL="https://centos.org/"
+VENDOR_NAME="CentOS"
+VENDOR_URL="https://centos.org/"
+BUG_REPORT_URL="https://issues.redhat.com/"
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux 10"
+REDHAT_SUPPORT_PRODUCT_VERSION="CentOS Stream"
+```
+</TabItem>
+</Tabs>
+
+## Debian
+<Tabs>
+<TabItem value="debian11" label="11 (bullseye)">
+```sh showLineNumbers
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+```
+</TabItem>
+<TabItem value="debian12" label="12 (bookworm)">
+```sh showLineNumbers
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME="Debian GNU/Linux"
+VERSION_ID="12"
+VERSION="12 (bookworm)"
+VERSION_CODENAME=bookworm
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+```
+</TabItem>
+<TabItem value="debian13" label="13 (trixie)">
+```sh showLineNumbers
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="13"
+VERSION="13 (trixie)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_FULL=13.2
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+```
+</TabItem>
+</Tabs>
+
+## Fedora
+<Tabs>
+<TabItem value="fedora41" label="41">
+```sh showLineNumbers
+NAME="Fedora Linux"
+VERSION="41 (Cloud Edition)"
+RELEASE_TYPE=stable
+ID=fedora
+VERSION_ID=41
+VERSION_CODENAME=""
+PLATFORM_ID="platform:f41"
+PRETTY_NAME="Fedora Linux 41 (Cloud Edition)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:fedoraproject:fedora:41"
+HOME_URL="https://fedoraproject.org/"
+DOCUMENTATION_URL="https://docs.fedoraproject.org/en-US/fedora/f41/system-administrators-guide/"
+SUPPORT_URL="https://ask.fedoraproject.org/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+REDHAT_BUGZILLA_PRODUCT="Fedora"
+REDHAT_BUGZILLA_PRODUCT_VERSION=41
+REDHAT_SUPPORT_PRODUCT="Fedora"
+REDHAT_SUPPORT_PRODUCT_VERSION=41
+SUPPORT_END=2025-05-13
+VARIANT="Cloud Edition"
+VARIANT_ID=cloud
+```
+</TabItem>
+<TabItem value="fedora42" label="42">
+```sh showLineNumbers
+NAME="Fedora Linux"
+VERSION="42 (Cloud Edition)"
+RELEASE_TYPE=stable
+ID=fedora
+VERSION_ID=42
+VERSION_CODENAME=""
+PLATFORM_ID="platform:f42"
+PRETTY_NAME="Fedora Linux 42 (Cloud Edition)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:fedoraproject:fedora:42"
+HOME_URL="https://fedoraproject.org/"
+DOCUMENTATION_URL="https://docs.fedoraproject.org/en-US/fedora/f42/system-administrators-guide/"
+SUPPORT_URL="https://ask.fedoraproject.org/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+REDHAT_BUGZILLA_PRODUCT="Fedora"
+REDHAT_BUGZILLA_PRODUCT_VERSION=42
+REDHAT_SUPPORT_PRODUCT="Fedora"
+REDHAT_SUPPORT_PRODUCT_VERSION=42
+SUPPORT_END=2026-05-13
+VARIANT="Cloud Edition"
+VARIANT_ID=cloud
+```
+</TabItem>
+<TabItem value="fedora43" label="43">
+```sh showLineNumbers
+NAME="Fedora Linux"
+VERSION="43 (Cloud Edition)"
+RELEASE_TYPE=stable
+ID=fedora
+VERSION_ID=43
+VERSION_CODENAME=""
+PRETTY_NAME="Fedora Linux 43 (Cloud Edition)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:fedoraproject:fedora:43"
+HOME_URL="https://fedoraproject.org/"
+DOCUMENTATION_URL="https://docs.fedoraproject.org/en-US/fedora/f43/"
+SUPPORT_URL="https://ask.fedoraproject.org/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+REDHAT_BUGZILLA_PRODUCT="Fedora"
+REDHAT_BUGZILLA_PRODUCT_VERSION=43
+REDHAT_SUPPORT_PRODUCT="Fedora"
+REDHAT_SUPPORT_PRODUCT_VERSION=43
+SUPPORT_END=2026-12-02
+VARIANT="Cloud Edition"
+VARIANT_ID=cloud
+```
+</TabItem>
+</Tabs>
+
+## Rocky Linux
+<Tabs>
+<TabItem value="rocky8" label="8.10">
+```sh showLineNumbers
+NAME="Rocky Linux"
+VERSION="8.10 (Green Obsidian)"
+ID="rocky"
+ID_LIKE="rhel centos fedora"
+VERSION_ID="8.10"
+PLATFORM_ID="platform:el8"
+PRETTY_NAME="Rocky Linux 8.10 (Green Obsidian)"
+ANSI_COLOR="0;32"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:rocky:rocky:8:GA"
+HOME_URL="https://rockylinux.org/"
+BUG_REPORT_URL="https://bugs.rockylinux.org/"
+SUPPORT_END="2029-05-31"
+ROCKY_SUPPORT_PRODUCT="Rocky-Linux-8"
+ROCKY_SUPPORT_PRODUCT_VERSION="8.10"
+REDHAT_SUPPORT_PRODUCT="Rocky Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="8.10"
+```
+</TabItem>
+<TabItem value="rocky9" label="9.7">
+```sh showLineNumbers
+NAME="Rocky Linux"
+VERSION="9.7 (Blue Onyx)"
+ID="rocky"
+ID_LIKE="rhel centos fedora"
+VERSION_ID="9.7"
+PLATFORM_ID="platform:el9"
+PRETTY_NAME="Rocky Linux 9.7 (Blue Onyx)"
+ANSI_COLOR="0;32"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:rocky:rocky:9::baseos"
+HOME_URL="https://rockylinux.org/"
+VENDOR_NAME="RESF"
+VENDOR_URL="https://resf.org/"
+BUG_REPORT_URL="https://bugs.rockylinux.org/"
+SUPPORT_END="2032-05-31"
+ROCKY_SUPPORT_PRODUCT="Rocky-Linux-9"
+ROCKY_SUPPORT_PRODUCT_VERSION="9.7"
+REDHAT_SUPPORT_PRODUCT="Rocky Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="9.7"
+```
+</TabItem>
+</Tabs>
+
+## Ubuntu
+<Tabs>
+<TabItem value="ubuntu18.04" label="18.04 (bionic)">
+```sh showLineNumbers
+NAME="Ubuntu"
+VERSION="18.04.6 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04.6 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+```
+</TabItem>
+<TabItem value="ubuntu20.04" label="20.04 (focal)">
+```sh showLineNumbers
+NAME="Ubuntu"
+VERSION="20.04.6 LTS (Focal Fossa)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
+```
+</TabItem>
+<TabItem value="ubuntu22.04" label="22.04 (jammy)">
+```sh showLineNumbers
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.5 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+```
+</TabItem>
+<TabItem value="ubuntu24.04" label="24.04 (noble)">
+```sh showLineNumbers
+PRETTY_NAME="Ubuntu 24.04.3 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.3 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+```
+</TabItem>
+</Tabs>
