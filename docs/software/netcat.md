@@ -23,9 +23,9 @@ echo -e "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: $(stat -c
 
 ## TCP 传输文件
 ```sh
-# 接收方
+# 接收方监听端口并写入文件
 nc -l 12345 > dir.tar
 
-# 发送方
-tar -cO ./Directory | nc -N RECEIVER_HOST 12345
+# 发送方读取文件并发送数据
+tar -cO ./Directory | nc -N 10.0.3.201 12345
 ```
