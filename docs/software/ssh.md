@@ -80,6 +80,8 @@ Match originalhost github.com exec "timeout 0.01 nc -z 127.0.0.1 1089 2> /dev/nu
     ProxyUseFdpass yes
 
 Host github.com
+    Hostname ssh.github.com
+    Port 443
     User git
     IdentityFile ~/.ssh/id_ed25519
 ```
