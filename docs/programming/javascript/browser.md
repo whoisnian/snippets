@@ -66,6 +66,35 @@ console.log(await readAsTextAsync(file))
 * [Chrome DevTools: Sensors: Emulate device sensors](https://developer.chrome.com/docs/devtools/sensors#geolocation)
 * [Chrome DevTools: Locations](https://developer.chrome.com/docs/devtools/settings/locations)
 
+## 浏览器安全上下文
+部分浏览器 API 只能在安全上下文中调用，例如 Clipboard，Service Worker，Notifications，Web Crypto 等
+* Chrome 对 secure origin 的判断方法是看 `(scheme, host, port)` 三项是否符合以下情况：
+  ```
+  (https, *, *)
+  (wss, *, *)
+  (*, localhost, *)
+  (*, 127/8, *)
+  (*, ::1/128, *)
+  (file, *, —)
+  (chrome-extension, *, —)
+  ```
+* Firefox 对 secure context 的判断依据则来自 [W3C Secure Contexts Specification](https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy)
+  ```
+  local:
+    http://127.0.0.1
+    http://localhost
+    http://*.localhost
+    file://
+  remote:
+    https://
+    wss://
+  ```
+
+参考来源：
+* [MDN Secure contexts: Features restricted to secure contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts/features_restricted_to_secure_contexts)
+* [The Chromium Projects: Prefer Secure Origins For Powerful New Features](https://www.chromium.org/Home/chromium-security/prefer-secure-origins-for-powerful-new-features/)
+* [MDN Secure contexts: Potentially trustworthy origins](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts#potentially_trustworthy_origins)
+
 ## 浏览器截图
 * Firefox 的截图功能较为开放，直接在网页空白处右键即可看到截图按钮，可以单击选择 DOM 节点，可以拖拽选择矩形区域，也可以在右上角选择截取可见范围或整个页面。
 * Chrome 的截图功能隐藏较深，需要先打开浏览器开发者工具，然后在右上角的折叠菜单中点击 `Run command` 打开命令输入框，搜索 screenshot 可以找到四个选项：
