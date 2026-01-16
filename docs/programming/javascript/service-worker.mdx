@@ -1,0 +1,179 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Service Worker
+
+## 常见使用场景
+* 应用后台同步
+* 浏览器通知推送
+* 拦截网络请求
+* 自定义请求缓存
+
+## 特点及限制
+* 事件驱动，非阻塞，完全异步，无法使用同步的 XMLHttpRequest 和 localStorage/sessionStorage
+* 运行在非主线程，无法访问 DOM
+* Firefox 处于无痕浏览模式、禁用了历史记录或启用了“在 Firefox 关闭时清除历史记录”时无法使用
+* Chrome 阻止所有 Cookie 时无法使用
+* 需要运行在安全的上下文中，通常指 HTTPS 网页，本地开发时的 localhost 也被认为是 secure origin
+* Firefox 147 (2026-01-13) 版本才在 Service Worker 中支持 ECMAScript modules
+
+参考来源：
+* [MDN Service Worker API: Service worker concepts and usage](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API#service_worker_concepts_and_usage)
+* [MDN Using Service Workers: Setting up to play with service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers#setting_up_to_play_with_service_workers)
+* [MDN Using Service Workers: Why is my service worker failing to register?](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers#why_is_my_service_worker_failing_to_register)
+* [MDN ServiceWorker: Browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker#browser_compatibility)
+* [The Chromium Projects: Service Worker Debugging](https://www.chromium.org/blink/serviceworker/service-worker-faq/)
+
+## 拦截网络请求示例
+前端加载 HTML 压缩包，并拦截相关网络请求，返回压缩包中的文件内容
+<Tabs>
+<TabItem value="index.html" label="index.html">
+```html showLineNumbers
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>htmlzip viewer</title>
+</head>
+
+<body>
+  <input type="file" id="fileinput" accept=".zip" disabled>
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((reg) => {
+        const fileInput = document.getElementById('fileinput')
+        fileInput.disabled = false
+        fileInput.addEventListener('change', (event) => {
+          console.log(event)
+          if (fileInput.files.length > 0) {
+            navigator.serviceWorker.controller.postMessage({
+              type: 'FILE_UPLOAD',
+              file: fileInput.files[0]
+            })
+          }
+        })
+      })
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        console.log(event)
+        if (event.data && event.data.type === 'FILE_UPLOAD_OK') {
+          const filename = event.data.filename
+          window.location.href = `/view/${encodeURIComponent(filename)}/`
+        }
+      })
+      await navigator.serviceWorker.register('sw.js', { type: 'module' })
+    } else {
+      window.alert('navigator.serviceWorker not found')
+    }
+  </script>
+</body>
+
+</html>
+```
+</TabItem>
+<TabItem value="sw.js" label="sw.js">
+```js showLineNumbers
+import 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+
+const mimeTypeMap = new Map([
+  ['html', 'text/html'],
+  ['css', 'text/css'],
+  ['xml', 'text/xml'],
+  ['txt', 'text/plain'],
+  ['gif', 'image/gif'],
+  ['jpeg', 'image/jpeg'],
+  ['jpg', 'image/jpeg'],
+  ['png', 'image/png'],
+  ['webp', 'image/webp'],
+  ['svg', 'image/svg+xml'],
+  ['woff', 'font/woff'],
+  ['woff2', 'font/woff2'],
+  ['otf', 'font/otf'],
+  ['ttf', 'font/ttf'],
+  ['js', 'application/javascript'],
+  ['json', 'application/json'],
+  ['wasm', 'application/wasm']
+])
+
+const escapeHtml = (ss) =>
+  ss.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+
+var ZIP = null
+var TOKEN = null
+
+const mimeTypeByName = (name) => {
+  const ext = name.match(/\.(\w+)$/i)
+  if (!ext)
+    return 'application/octet-stream'
+  return mimeTypeMap.get(ext[1].toLowerCase()) || 'application/octet-stream'
+}
+
+const handleRequest = async (request, token, fpath) => {
+  if (!ZIP || token !== TOKEN) {
+    return new Response('The zip file failed to load. <a href="/">Click here to return to the homepage.</a>', {
+      headers: { 'content-type': 'text/html; charset=utf-8' }
+    })
+  }
+
+  const fi = ZIP.file(decodeURI(fpath))
+  if (fi) {
+    return new Response(await fi.async('blob'), {
+      headers: { 'content-type': mimeTypeByName(fpath) }
+    })
+  } else {
+    const di = ZIP.folder(decodeURI(fpath))
+    if (di) {
+      const list = []
+      di.forEach((relativePath, file) => {
+        const parts = relativePath.split('/')
+        if (parts.length <= 1 || (parts.length == 2 && parts[1] === ''))
+          list.push(`<a href="${encodeURI(relativePath)}">${escapeHtml(relativePath)}</a>`)
+      })
+      return new Response(list.join('<br/>'), {
+        headers: { 'content-type': 'text/html; charset=utf-8' }
+      })
+    }
+  }
+  return new Response('404 not found', { status: 404 })
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event
+  if (request.method !== 'GET')
+    return
+
+  const url = new URL(request.url)
+  if (url.pathname.startsWith('/view/')) {
+    const ss = url.pathname.slice('/view/'.length).split('/')
+    event.respondWith(handleRequest(request, ss.shift(), ss.join('/')))
+  }
+})
+
+self.addEventListener('install', (event) => {
+  console.log(event)
+  self.skipWaiting()
+})
+self.addEventListener('activate', (event) => {
+  console.log(event)
+  event.waitUntil(clients.claim())
+})
+self.addEventListener('message', async (event) => {
+  console.log(event)
+  if (event.data && event.data.type === 'FILE_UPLOAD') {
+    const file = event.data.file
+    ZIP = await JSZip.loadAsync(file)
+    TOKEN = encodeURIComponent(file.name)
+    event.source.postMessage({
+      type: 'FILE_UPLOAD_OK',
+      filename: file.name
+    })
+  }
+})
+```
+</TabItem>
+</Tabs>
