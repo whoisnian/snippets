@@ -46,7 +46,7 @@ const config = {
       colorMode: { respectPrefersColorScheme: true },
       navbar: {
         title: 'Snippets',
-        logo: { alt: 'Website Logo', src: 'img/logo.svg' },
+        logo: { alt: 'Website Logo', src: 'img/logo.svg', srcDark: 'img/logo-dark.svg' },
         items: [
           { label: '软件', to: '/docs/software', position: 'left' },
           { label: '系统', to: '/docs/system', position: 'left' },
