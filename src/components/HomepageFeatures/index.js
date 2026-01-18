@@ -4,48 +4,44 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/logo.svg').default,
+    title: '常用软件',
+    Svg: require('@site/static/img/apps.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Docker，Git，MySQL，OpenSSL 等工具的配置和使用记录。
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/logo.svg').default,
+    title: '系统管理',
+    Svg: require('@site/static/img/terminal.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Linux 和 Windows 操作系统的配置和使用记录。
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/logo.svg').default,
+    title: '编程语言',
+    Svg: require('@site/static/img/code.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Go，JavaScript，Ruby 等编程语言的笔记和代码片段。
       </>
     ),
   },
   {
-    title: 'Powered by XXXXX',
-    Svg: require('@site/static/img/logo.svg').default,
+    title: '其他杂项',
+    Svg: require('@site/static/img/archive.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        开发实践过程中其他类别的个人笔记和代码片段。
       </>
     ),
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ Svg, title, description }) {
   return (
     <div className={clsx('col col--3')}>
       <div className="text--center">
