@@ -70,3 +70,10 @@ docker manifest inspect myapp:1.0.0
 相关文档：
 * [Docker Docs: Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 * [Docker Docs: Building best practices](https://docs.docker.com/build/building/best-practices/)
+
+## extra_hosts 分隔符
+使用 Docker Compose 创建容器时收到报错 `Error response from daemon: invalid IP address in add-host: ""`，根据近期改动推测是未能正确从 `hostname=8.8.8.8` 中解析出 IP 地址。  
+虽然 [Docker CLI reference](https://docs.docker.com/reference/cli/docker/container/run/#add-host) 和 [Docker Compose file reference](https://docs.docker.com/reference/compose-file/services/#extra_hosts) 中提到使用 `=` 或者 `:` 作为分隔符都可以，且更推荐使用 `=`。但由于官方文档缺少明确的版本划分，因此只能认为其对应的是最新版 Docker，旧版可能只支持一种分隔符。  
+
+于是查找相关代码，关联的提交分别是 [docker/cli: a682b8e](https://github.com/docker/cli/commit/a682b8e655da8af6200c33f4d77ea60e11296716) 和 [compose-spec/compose-go: a5007e7](https://github.com/compose-spec/compose-go/commit/a5007e73822c1f143eb99efee35c0cadb35719ee)，最初是为了方便解析参数中带冒号的 ipv6 地址，而在 2023 年 11 月支持了使用 `=` 作为分隔符。  
+因此如果 docker cli 版本小于 `v25.0.0` 或者 docker compose 版本小于 `v2.24.0`，那么使用 `=` 作为分隔符就可能出现这样的报错。
