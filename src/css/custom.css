@@ -28,3 +28,21 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.center-table {
+  display: flex;
+  justify-content: center;
+}
+
+.center-image-max-width-800px {
+  text-align: center;
+  max-width: 800px;
+  margin: auto;
+}
+
+.background-light {
+  background-color: #ffffff;
+}
+[data-theme='dark'] .background-light {
+  background-color: #808080;
+}
