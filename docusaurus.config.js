@@ -7,6 +7,7 @@ const config = {
   title: 'Snippets',
   tagline: 'Collection of knowledge snippets',
   favicon: 'img/favicon.ico',
+  trailingSlash: true,
 
   future: { v4: true }, // https://docusaurus.io/docs/api/docusaurus-config#future
 
