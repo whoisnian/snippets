@@ -5,7 +5,8 @@ MySQL 5.X 的默认身份验证插件是 `mysql_native_password`，从 MySQL 8.0
 MySQL 8.0 及之后的版本将默认插件更换为 `caching_sha2_password`，但部分语言驱动适配滞后，一些情况下仍需降级为 `mysql_native_password` 保持最大兼容性。  
 ```sh
 docker volume create mysql-data
-docker run --name mysql-dev \
+docker run -d --restart=always \
+  --name mysql-dev \
   -e MYSQL_ROOT_PASSWORD=V9lwqSsvRseYcgWzRlDI \
   -v mysql-data:/var/lib/mysql \
   -p 3306:3306 \
