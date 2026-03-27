@@ -31,3 +31,21 @@ Exec=zbarimg --quiet "%f" | sed 's/^QR-Code://' | kdialog --textbox - 640 512
 ```
 
 参考来源：[KDE Developer Documentation: Creating Dolphin service menus](https://develop.kde.org/docs/apps/dolphin/service-menus/)
+
+## 远程桌面
+KDE 提供了名为 KRDC 的远程桌面客户端，依赖 `libvncserver` 和 `freerdp` 提供 VNC 和 RDP 协议支持。  
+但在 Arch Linux 上使用 RDP 协议连接局域网内的 Windows 主机时，遇到了初始化缓慢的问题，具体表现为点击信任证书后界面无响应，等待几分钟后才加载出 Windows 画面，后续操作正常无明显延迟。  
+
+排查后发现是 freerdp 支持 kerberos 认证，而 Arch Linux 上的 kerberos 配置文件 `/etc/krb5.conf` 中默认包含 `kerberos.mit.edu` 外部地址，导致在连接 Windows 时本地会往 `kerberos.mit.edu:88` 发送 UDP 请求。正好赶上局域网内代理网关的上游节点对 UDP 代理支持不佳，导致 UDP 请求超时，最终影响了 RDP 连接的初始化速度。  
+
+根据以上原因，一种解决方案是在局域网内的代理网关上禁用 UDP 代理，另一种则是直接禁用本地的 kerberos 认证。个人更推荐后者，因为本地确实没有地方用到 kerberos 认证，也不希望局域网内就能完成的功能还要去访问外部互联网。  
+```sh
+# 使用空的 krb5.conf 禁用 kerberos 认证
+sudo mv /etc/krb5.conf /etc/krb5.conf.bak
+sudo touch /etc/krb5.conf
+```
+
+参考来源：
+* [ArchWiki: Kerberos](https://wiki.archlinux.org/title/Kerberos)
+* [GitHub: FreeRDP issues#10138 Freerdp 3 authentication hangs due to broken krb5.conf](https://github.com/FreeRDP/FreeRDP/issues/10138)
+* [FreeRDP FAQ: Connect takes a very long time (~1 minute)](https://github.com/freerdp/freerdp/wiki/FAQ#connect-takes-a-very-long-time-1-minute)
