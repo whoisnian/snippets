@@ -49,3 +49,49 @@ sudo touch /etc/krb5.conf
 * [ArchWiki: Kerberos](https://wiki.archlinux.org/title/Kerberos)
 * [GitHub: FreeRDP issues#10138 Freerdp 3 authentication hangs due to broken krb5.conf](https://github.com/FreeRDP/FreeRDP/issues/10138)
 * [FreeRDP FAQ: Connect takes a very long time (~1 minute)](https://github.com/freerdp/freerdp/wiki/FAQ#connect-takes-a-very-long-time-1-minute)
+
+## NetworkManager 热点无法连接
+* 创建无密码热点时，其他设备正常连接；
+* 热点安全性修改为 `WPA3 个人版` 时，桌面端无法正常启用热点；
+* 热点安全性修改为 `WPA2/WPA3 个人版` 时，桌面端正常启用，LineageOS 手机默认使用 WPA3 加密方式，无法正常连接；
+
+问题丢给 Claude 后，先确认了本地网卡和驱动正常，又编写测试配置查看 journalctl 报错日志，定位到以下问题：
+* 纯 WPA3 模式无法启用热点：NetworkManager 在 AP 模式下漏发 proto/pairwise/group
+* WPA2/WPA3 混合模式：NetworkManager 广播了 SAE 但不开 MFP
+
+对应的修复方案：
+* 纯 WPA3 模式使用 nmcli 命令创建热点，并指定缺失参数，例如：
+  ```sh
+  nmcli con add type wifi ifname wlo1 con-name hotspot-wpa3 autoconnect no \
+    ssid '热点名称' \
+    802-11-wireless.mode ap 802-11-wireless.band bg 802-11-wireless.channel 6 \
+    ipv4.method shared ipv6.method ignore \
+    802-11-wireless-security.key-mgmt sae \
+    802-11-wireless-security.psk '连接密码' \
+    802-11-wireless-security.proto rsn \
+    802-11-wireless-security.pairwise ccmp \
+    802-11-wireless-security.group ccmp \
+    802-11-wireless-security.pmf 3
+  ```
+  测试手动为已有的 `/etc/NetworkManager/system-connections/XXXXX.nmconnection` 补充配置项后重启 NetworkManager 也可生效：
+  ```conf
+  [wifi-security]
+  key-mgmt=sae
+  psk=mypassword
+  # 手动添加以下四项 group/pairwise/pmf/proto
+  group=ccmp;
+  pairwise=ccmp;
+  pmf=3
+  proto=rsn;
+  ```
+* WPA2/WPA3 混合模式只能绕开 NetworkManager 使用 hostapd，关键配置为：
+  ```conf
+  wpa=2
+  wpa_key_mgmt=WPA-PSK SAE
+  ieee80211w=1
+  sae_require_mfp=1
+  ```
+
+参考来源：
+* [ArchWiki: Ad-hoc networking](https://wiki.archlinux.org/title/Ad-hoc_networking#wpa_supplicant)
+* [Walt's Workbench: Securing a Wifi Hotspot with WPA3 using NetworkManager](https://waltsworkbench.com/securing-a-wifi-hotspot-with-wpa3-using-networkmanager-on-a-raspberry-pi-running-bookworm-aka-debian-12/)
