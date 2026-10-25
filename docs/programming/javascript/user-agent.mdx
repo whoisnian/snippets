@@ -1,0 +1,214 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# User-Agent
+
+参考来源：
+* [MDN HTTP headers: User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent)
+* [MDN HTTP headers: Sec-CH-UA](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-CH-UA)
+* [The Chromium Projects: User-Agent Reduction](https://www.chromium.org/updates/ua-reduction/)
+
+以下结果测试于 2026-10-25，测试工具使用 Claude Code 编写的 [reqdump](https://github.com/whoisnian/misc/tree/master/cmd/reqdump)。
+
+## 系统与浏览器
+### Windows
+<Tabs>
+<TabItem value="win-chrome" label="Chrome 156">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+Sec-CH-UA: "Not:A-Brand";v="8", "Chromium";v="156", "Google Chrome";v="156"
+Sec-CH-UA-Platform: "Windows"
+```
+</TabItem>
+<TabItem value="win-edge" label="Edge 156">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0
+Sec-CH-UA: "Not:A-Brand";v="8", "Chromium";v="156", "Microsoft Edge";v="156"
+Sec-CH-UA-Platform: "Windows"
+```
+</TabItem>
+</Tabs>
+
+### Linux
+<Tabs>
+<TabItem value="linux-chromium" label="Chromium 156">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+Sec-CH-UA: "Not:A-Brand";v="8", "Chromium";v="156"
+Sec-CH-UA-Platform: "Linux"
+```
+</TabItem>
+<TabItem value="linux-firefox" label="Firefox 158">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:158.0) Gecko/20100101 Firefox/158.0
+```
+</TabItem>
+</Tabs>
+
+### Android
+<Tabs>
+<TabItem value="android-chrome" label="Chrome 155">
+```
+User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36
+Sec-CH-UA: "Google Chrome";v="155", "Chromium";v="155", "Not(A:Brand";v="24"
+Sec-CH-UA-Platform: "Android"
+```
+</TabItem>
+<TabItem value="android-edge" label="Edge 155">
+```
+User-Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36 EdgA/155.0.0.0
+Sec-CH-UA: "Microsoft Edge";v="155", "Chromium";v="155", "Not(A:Brand";v="24"
+Sec-CH-UA-Platform: "Android"
+```
+</TabItem>
+<TabItem value="android-firefox" label="Firefox 158">
+```
+User-Agent: Mozilla/5.0 (Android 17; Mobile; rv:158.0) Gecko/158.0 Firefox/158.0
+```
+</TabItem>
+<TabItem value="android-mqq" label="QQ 浏览器 20.6">
+```
+User-Agent: Mozilla/5.0 (Linux; U; Android 16; zh-cn; PLZ110 Build/BP2A.250605.015) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/121.0.6167.71 MQQBrowser/20.6 Mobile Safari/537.36 COVC/048931
+Sec-CH-UA: "Not A(Brand";v="99", "Android WebView";v="121", "Chromium";v="121"
+Sec-CH-UA-Platform: "Android"
+```
+</TabItem>
+<TabItem value="android-quark" label="夸克 10.19">
+```
+User-Agent: Mozilla/5.0 (Linux; U; Android 16; zh-Hans-CN; PLZ110 Build/BP2A.250605.015) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/144.0.7559.86 Quark/10.19.0.1165 Mobile Safari/537.36
+Sec-CH-UA: "Not(A:Brand";v="8", "Chromium";v="144", "Android WebView";v="144"
+Sec-CH-UA-Platform: "Android"
+```
+</TabItem>
+<TabItem value="android-baidu" label="百度 15.79">
+```
+User-Agent: Mozilla/5.0 (Linux; Android 16; PLZ110 Build/BP2A.250605.015; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/142.0.7444.58 Mobile Safari/537.36 T7/15.79 SP-engine/3.64.0 bd_dvt/0 baiduboxapp/15.79.0.11 (Baidu; P1 16) NABar/1.0
+Sec-CH-UA: "Chromium";v="142", "Android WebView";v="142", "Not_A Brand";v="99"
+Sec-CH-UA-Platform: "Android"
+```
+</TabItem>
+<TabItem value="android-heytap" label="HeyTap 40.10">
+```
+User-Agent: Mozilla/5.0 (Linux; U; Android 16; zh-cn; PLZ110 Build/BP2A.250605.015) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/115.0.5790.168 Mobile Safari/537.36 HeyTapBrowser/40.10.23.1
+```
+</TabItem>
+</Tabs>
+
+### iOS
+<Tabs>
+<TabItem value="ios-safari" label="Safari 27.0.1">
+```
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0.1 Mobile/15E148 Safari/604.1
+```
+</TabItem>
+<TabItem value="ios-chrome" label="Chrome 156">
+```
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 27_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/156.0.8078.54 Mobile/15E148 Safari/604.1
+```
+</TabItem>
+<TabItem value="ios-firefox" label="Firefox 158.1">
+```
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/158.1 Mobile/15E148 Safari/604.1
+```
+</TabItem>
+</Tabs>
+
+## AI Agent
+### 桌面端内置浏览器
+| 工具          | 版本          | UA 标识                              | 说明                                                                                                                                                           |
+| ------------- | ------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ZCode         | 3.16.3        | `ZCode/3.16.3 … Electron/41.0.3`     |                                                                                                                                                                |
+| Trae CN       | 1.107.1       | `TraeCN/1.107.1 … Electron/39.2.7`   | 也会改用普通的 `Chrome/135.0.0.0` UA 打开，子请求的 `Sec-CH-UA` 仍是 Chromium 142；会额外请求 `/@vite/client`                                                  |
+| Qoder         | 0.4.11        | `Qoder/0.4.11 … Electron/43.1.1`     | 页面请求用 Mac Chrome 131 的 UA，只有 favicon 带 Qoder 标识                                                                                                    |
+| WorkBuddy     | 5.9.2         | `WorkBuddy/5.9.2 … Electron/37.10.3` |                                                                                                                                                                |
+| Claude 桌面版 | 3.6556.2      | `Claude/3.6556.2 … MSIX`             | 没有 `Electron/` 标识；页面里 JS 读到的屏幕尺寸是 0×0                                                                                                          |
+| 豆包桌面版    | 2.32.6        | 无                                   | 页面请求是普通的 Windows Chrome 147 UA，`Sec-CH-UA` 只有 Chromium；只有客户端自己取 favicon 时带 `SamanthaDoubao/2.32.6`，Referer 为 `https://www.doubao.com/` |
+| Codex         | 26.1021.31345 | 无                                   | 直接调起本机安装的 Chrome，与普通 Chrome 无区别                                                                                                                |
+
+<Tabs>
+<TabItem value="zcode" label="ZCode">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ZCode/3.16.3 Chrome/146.0.7680.80 Electron/41.0.3 Safari/537.36
+Sec-CH-UA: "Not-A.Brand";v="24", "Chromium";v="146"
+```
+</TabItem>
+<TabItem value="trae" label="Trae CN">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) TraeCN/1.107.1 Chrome/142.0.7444.235 Electron/39.2.7 Safari/537.36
+Sec-CH-UA: "Not_A Brand";v="99", "Chromium";v="142"
+```
+</TabItem>
+<TabItem value="qoder" label="Qoder">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Qoder/0.4.11 Chrome/150.0.7871.114 Electron/43.1.1 Safari/537.36
+Sec-CH-UA: "Not;A=Brand";v="8", "Chromium";v="150"
+```
+</TabItem>
+<TabItem value="workbuddy" label="WorkBuddy">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) WorkBuddy/5.9.2 Chrome/138.0.7204.251 Electron/37.10.3 Safari/537.36
+Sec-CH-UA: "Not)A;Brand";v="8", "Chromium";v="138"
+```
+</TabItem>
+<TabItem value="claude" label="Claude">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Claude/3.6556.2 Chrome/152.0.7977.167 Safari/537.36 MSIX
+Sec-CH-UA: "Not?A_Brand";v="24", "Chromium";v="152"
+```
+</TabItem>
+<TabItem value="doubao" label="豆包">
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Sec-CH-UA: "Chromium";v="147", "Not.A/Brand";v="8"
+
+# 仅 favicon 请求
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 SamanthaDoubao/2.32.6
+```
+</TabItem>
+</Tabs>
+
+### 抓取工具
+| 工具      | User-Agent                                                                                                              | 说明                                                                    |
+| --------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Qoder CLI | `qodercli/1.1.75-hotfix.1 (+https://qoder.com)`                                                                         | HTTP/1.1，`Accept-Language: *`；Qoder 还会调用系统自带的 `curl/8.21.0`  |
+| WorkBuddy | `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36` | 冒充 Mac Chrome 131，HTTP/1.1，带 `caller_method`、`traceparent` 请求头 |
+
+### 云端浏览器
+| 工具         | 出口         | 请求                                                                                                                    |
+| ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| 豆包云电脑   | 阿里云       | 先用 `curl/7.81.0` 取一次，再用 Linux Chrome 146 打开，UA 末尾带 `DoubaoWorkVM`；2 核 4G、时区 Asia/Singapore、无 WebGL |
+| Trae 云端    | 火山引擎     | `curl/8.5.0` 和 Linux Chromium 149 / 150（`Sec-CH-UA` 没有 `"Google Chrome"`），时区 UTC，无 WebGL                      |
+| ZCode 读网页 | Google Cloud | Linux Chrome 156 + SwiftShader 软件渲染，`Sec-CH-UA` 声称 Google Chrome 155，与 UA 版本不一致，请求头顺序被打乱         |
+| Claude 云端  | Anthropic    | `curl/8.5.0` 和 `HeadlessChrome/153.0.8010.12`                                                                          |
+| WorkBuddy    | 国内家宽     | 两个不同地区的家宽 IP 同一秒用 Windows Chrome 144 / 151 打开，各有真实显卡，与普通用户无区别                            |
+
+<Tabs>
+<TabItem value="doubao-vm" label="豆包云电脑">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 DoubaoWorkVM
+Sec-CH-UA: "Not-A.Brand";v="24", "Chromium";v="146"
+Sec-CH-UA-Platform: "Linux"
+```
+</TabItem>
+<TabItem value="trae-cloud" label="Trae 云端">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36
+Sec-CH-UA: "Not;A=Brand";v="8", "Chromium";v="150"
+Sec-CH-UA-Platform: "Linux"
+```
+</TabItem>
+<TabItem value="zcode-reader" label="ZCode 读网页">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+Sec-CH-UA: "Google Chrome";v="155", "Chromium";v="155", "Not(A:Brand";v="24"
+Sec-CH-UA-Platform: "Linux"
+```
+</TabItem>
+<TabItem value="claude-cloud" label="Claude 云端">
+```
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
+Sec-CH-UA: "HeadlessChrome";v="153", "Not_A Brand";v="8", "Chromium";v="153"
+Sec-CH-UA-Platform: "Linux"
+```
+</TabItem>
+</Tabs>
